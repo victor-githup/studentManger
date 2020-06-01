@@ -35,10 +35,10 @@ void in(void)
 		printf("请输入录入学生Id:");
 		fflush(stdin);
 		scanf("%d", &stu[m].num);
-		for(int i = 0; i < m; i++) {
+		for (int i = 0; i < m; i++) {
 			if (stu[i].name == stu[m].name) {
 				printf("该学生ID已被征用\n");
-				getch();
+				system("pause");
 			fclose(fp);
 			return;
 			}
@@ -58,7 +58,7 @@ void in(void)
 		stu[m].sum = stu[m].exec + stu[m].expe + stu[m].requ;
 		if (fwrite(&stu[m], LEN, 1, fp) != 1) {
 			printf("保存失败\n");
-			getch();
+			system("pause");
 		} else {
 			printf("%s的信息已录入\n",stu[m].name);
 			m++;
@@ -69,7 +69,7 @@ void in(void)
 	}
 	fclose(fp);
 	printf("学生信息加载成功\n");
-	getch();
+	system("pause");
 }
 //显示学生信息
 void show(void)
@@ -87,13 +87,56 @@ void show(void)
 	for (int i = 0; i < m; i++) {
 		printf(FORMAT,DATA);
 	}
-	getch();
+	system("pause");
 }
 
 //按照总分排序
 void order(void)
 {
-
+	FILE *fp;
+	struct student t;
+	int i = 0;
+	int j = 0;
+	int m = 0;
+	fp = fopen("data.txt", "r+");
+	if (fp == NULL) {
+		printf("文件不存在\n");
+		return;
+	}
+	while (!feof(fp)) {
+		if (fread(&stu[m], LEN, 1, fp) == 1) {
+			m++;
+		}
+	}
+	fclose(fp);
+	fp == NULL;
+	if (m == 0) {
+		printf("文件中没有记录\n");
+		return;
+	}
+	for (i = 0; i< (m - 1); i++) {
+		for (j = (i + 1); j < m; j++) {
+			if (stu[i].sum < stu[j].sum) {
+				t = stu[i];
+				stu[i] = stu[j];
+				stu[j] = t;
+			}
+		}
+	}
+	fp = fopen("data.txt", "wb");
+	if (fp == NULL) {
+		printf("文件不存在\n");
+		return ;
+	}
+	for(i = 0; i < m; i++) {
+		if(fwrite(&stu[i], LEN, 1, fp) != 1) {
+			printf("未正确保存\n");
+			system("pause");
+		}
+	}
+	fclose(fp);
+	printf("保存成功\n");
+	system("pause");
 }
 //删除学生成绩信息
 void del(void)
@@ -137,7 +180,7 @@ void del(void)
 				for (j = 0; j < m; j++) {
 					if (fwrite(&stu[j], LEN, 1, fp) !=1) {
 						printf("can not save data\n");
-						getch();
+						system("pause");
 					}
 				}
 				fclose(fp);
@@ -152,14 +195,70 @@ void del(void)
 	if (i == m + 1) {
 		printf("没有找到该学生\n");
 	}
-	getch();
+	system("pause");
 	
 
 }
 //修改学生成绩信息
 void modify(void)
 {
-	
+	FILE *fp;
+	struct student t;
+	fp = fopen("data.txt", "r+");
+	if (fp == NULL) {
+		printf("文件不存在\n");
+		return;
+	}
+	int m = 0;
+	while (!feof(fp)) {
+		if (fread(&stu[m], LEN, 1, fp) == 1) {
+			m++;
+		}
+	}
+	if (m == 0) {
+		printf("文件中没有记录\n");
+		fclose(fp);
+		return;
+	}
+	fclose(fp);
+	show ();
+	printf("请输入要修改的学生ID:");
+	int sNum;
+	scanf("%d", &sNum);
+	int i = 0;
+	for (i = 0; i < m; i++) {
+		//find this student
+		if (sNum == stu[i].num) {
+			printf("已找到该学生,可以修改信息\n");
+			printf("name:");
+			scanf("%s", stu[i].name);
+			printf("elective:");
+			scanf("%lf", &stu[i].exec);
+			printf("experiment:");
+			scanf("%lf", &stu[i].expe);
+			printf("required course:");
+			scanf("%lf", &stu[i].requ);
+			printf("修改成功\n");
+			stu[i].sum = stu[i].exec + stu[i].expe + stu[i].requ;
+			fp = fopen("data.txt", "wb");
+			if (fp == NULL) {
+				printf("文件不存在\n");
+				return;
+			}
+			for (int i = 0; i < m; i++) {
+				if (fwrite(&stu[i], LEN, 1, fp) != 1) {
+					printf("数据保存失败\n");
+					system("pause");
+				}
+			}
+			fclose(fp);
+			break;
+		}
+	}
+	if (i == m) {
+		printf("没有找到该学生\n");
+	}
+	system("pause");
 }
 //主菜单
 void menu(void)
@@ -204,7 +303,7 @@ void total(void)
 		}
 	}
 	printf("一共有%d位学生\n",cnt);
-	getch();
+	system("pause");
 }
 //查找学生信息
 void search(void)
@@ -240,6 +339,6 @@ void search(void)
 	if(i == m) {
 		printf("没有该学生\n");
 	}
-	getch();
+	system("pause");
 }
 
